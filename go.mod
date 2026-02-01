@@ -1,4 +1,4 @@
-module github.com/adityanarayan/masstdb
+module github.com/AdityaNarayan29/masstDB
 
 go 1.25.6
 

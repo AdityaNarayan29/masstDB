@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/adityanarayan/masstdb/cmd"
+	"github.com/AdityaNarayan29/masstDB/cmd"
 )
 
 func main() {

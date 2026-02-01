@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/adityanarayan/masstdb/internal/database"
-	"github.com/adityanarayan/masstdb/internal/logger"
+	"github.com/AdityaNarayan29/masstDB/internal/database"
+	"github.com/AdityaNarayan29/masstDB/internal/logger"
 )
 
 // Options contains backup configuration options

@@ -14,13 +14,13 @@ A powerful command-line database backup utility supporting multiple database man
 ### Using Go
 
 ```bash
-go install github.com/adityanarayan/masstdb@latest
+go install github.com/AdityaNarayan29/masstDB@latest
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/adityanarayan/masstdb.git
+git clone https://github.com/AdityaNarayan29/masstDB.git
 cd masstdb
 make build
 ```

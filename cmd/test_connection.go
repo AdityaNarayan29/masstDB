@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/adityanarayan/masstdb/internal/database"
-	"github.com/adityanarayan/masstdb/internal/logger"
+	"github.com/AdityaNarayan29/masstDB/internal/database"
+	"github.com/AdityaNarayan29/masstDB/internal/logger"
 	"github.com/spf13/cobra"
 )
 
