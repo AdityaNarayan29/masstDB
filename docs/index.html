@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MasstDB - Database Backup Utility</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1a1;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --green: #22c55e;
+            --purple: #a855f7;
+            --orange: #f97316;
+            --border: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .github-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .github-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--text-secondary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 100px;
+            text-align: center;
+            background: radial-gradient(ellipse at top, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--accent);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #fff 0%, #a1a1a1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 48px auto;
+            max-width: 600px;
+            text-align: left;
+            position: relative;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--green);
+        }
+
+        .code-block .comment {
+            color: var(--text-secondary);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--text-secondary);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .section-title p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Databases Section */
+        .databases {
+            padding: 100px 0;
+            background: var(--bg-secondary);
+        }
+
+        .db-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .db-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .db-card:hover {
+            border-color: var(--accent);
+        }
+
+        .db-card .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .db-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .db-card p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Commands Section */
+        .commands {
+            padding: 100px 0;
+        }
+
+        .command-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .command-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .command-header {
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .command-header .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .command-header .dot.red { background: #ef4444; }
+        .command-header .dot.yellow { background: #eab308; }
+        .command-header .dot.green { background: #22c55e; }
+
+        .command-body {
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .command-body .prompt {
+            color: var(--green);
+        }
+
+        .command-body .cmd {
+            color: var(--text-primary);
+        }
+
+        .command-body .output {
+            color: var(--text-secondary);
+            margin-top: 12px;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            text-align: center;
+            background: radial-gradient(ellipse at bottom, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .db-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .command-examples {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="#" class="logo">Masst<span>DB</span></a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#databases">Databases</a></li>
+                <li><a href="#commands">Commands</a></li>
+                <li><a href="https://github.com/AdityaNarayan29/masstDB#readme">Docs</a></li>
+            </ul>
+            <a href="https://github.com/AdityaNarayan29/masstDB" class="github-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <span class="badge">Open Source CLI Tool</span>
+            <h1>Database Backups<br>Made Simple</h1>
+            <p>A powerful command-line utility for backing up and restoring PostgreSQL, MySQL, MongoDB, and SQLite databases with compression support.</p>
+
+            <div class="hero-buttons">
+                <a href="https://github.com/AdityaNarayan29/masstDB/releases" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download
+                </a>
+                <a href="https://github.com/AdityaNarayan29/masstDB" class="btn btn-secondary">
+                    View on GitHub
+                </a>
+            </div>
+
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode()">Copy</button>
+                <code>
+                    <span class="comment"># Install with Go</span><br>
+                    go install github.com/AdityaNarayan29/masstDB@latest
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why MasstDB?</h2>
+                <p>Everything you need for database backup management</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#128230;</div>
+                    <h3>Automatic Compression</h3>
+                    <p>Backups are gzip compressed by default, saving up to 70% storage space.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">&#9889;</div>
+                    <h3>Fast & Efficient</h3>
+                    <p>Uses native database tools for maximum performance and reliability.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">&#128421;</div>
+                    <h3>Cross-Platform</h3>
+                    <p>Works on macOS, Linux, and Windows with a single binary.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">&#128274;</div>
+                    <h3>Secure</h3>
+                    <p>Credentials stay local. No data sent to external servers.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">&#128221;</div>
+                    <h3>Detailed Logging</h3>
+                    <p>Track backup activities with timestamps, sizes, and durations.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">&#128736;</div>
+                    <h3>Easy to Use</h3>
+                    <p>Simple CLI commands with helpful flags and documentation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Databases Section -->
+    <section class="databases" id="databases">
+        <div class="container">
+            <div class="section-title">
+                <h2>Supported Databases</h2>
+                <p>Backup any of these databases with a single command</p>
+            </div>
+
+            <div class="db-grid">
+                <div class="db-card">
+                    <div class="icon">&#128024;</div>
+                    <h4>PostgreSQL</h4>
+                    <p>pg_dump / psql</p>
+                </div>
+                <div class="db-card">
+                    <div class="icon">&#128044;</div>
+                    <h4>MySQL</h4>
+                    <p>mysqldump / mysql</p>
+                </div>
+                <div class="db-card">
+                    <div class="icon">&#127811;</div>
+                    <h4>MongoDB</h4>
+                    <p>mongodump / mongorestore</p>
+                </div>
+                <div class="db-card">
+                    <div class="icon">&#128451;</div>
+                    <h4>SQLite</h4>
+                    <p>sqlite3 .dump</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands Section -->
+    <section class="commands" id="commands">
+        <div class="container">
+            <div class="section-title">
+                <h2>Simple Commands</h2>
+                <p>Get started in seconds with intuitive CLI commands</p>
+            </div>
+
+            <div class="command-examples">
+                <div class="command-card">
+                    <div class="command-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="command-body">
+                        <span class="prompt">$</span> <span class="cmd">masstdb backup --type postgres --database mydb</span>
+                        <div class="output">
+                            [INFO] Starting backup process...<br>
+                            [INFO] Connection successful!<br>
+                            [INFO] Backup completed successfully!<br>
+                            [INFO] &nbsp;&nbsp;File: backups/mydb_full_20260130.sql.gz<br>
+                            [INFO] &nbsp;&nbsp;Size: 2.4 MB<br>
+                            [INFO] &nbsp;&nbsp;Duration: 1.2s
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <div class="command-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="command-body">
+                        <span class="prompt">$</span> <span class="cmd">masstdb list</span>
+                        <div class="output">
+                            NAME &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SIZE &nbsp;&nbsp;&nbsp;CREATED<br>
+                            ---- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---- &nbsp;&nbsp;&nbsp;-------<br>
+                            mydb_full_20260130.sql.gz &nbsp;&nbsp;2.4 MB &nbsp;2026-01-30<br>
+                            mydb_full_20260129.sql.gz &nbsp;&nbsp;2.3 MB &nbsp;2026-01-29<br><br>
+                            Total: 2 backup(s)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <div class="command-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="command-body">
+                        <span class="prompt">$</span> <span class="cmd">masstdb restore --type postgres --database mydb --file backup.sql.gz</span>
+                        <div class="output">
+                            [INFO] Starting restore process...<br>
+                            [INFO] Connection successful!<br>
+                            [INFO] Restoring from: backup.sql.gz<br>
+                            [INFO] Restore completed successfully!<br>
+                            [INFO] &nbsp;&nbsp;Duration: 3.4s
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <div class="command-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <div class="command-body">
+                        <span class="prompt">$</span> <span class="cmd">masstdb test --type postgres --host localhost --database mydb</span>
+                        <div class="output">
+                            [INFO] Testing connection to postgres...<br>
+                            [INFO] Connection successful!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to simplify your backups?</h2>
+            <p>MasstDB is free, open-source, and ready to use.</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/AdityaNarayan29/masstDB/releases" class="btn btn-primary">
+                    Download Now
+                </a>
+                <a href="https://github.com/AdityaNarayan29/masstDB" class="btn btn-secondary">
+                    Star on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Built with Go by <a href="https://github.com/AdityaNarayan29">Aditya Narayan</a></p>
+            <p style="margin-top: 8px; font-size: 0.9rem;">MIT License</p>
+        </div>
+    </footer>
+
+    <script>
+        function copyCode() {
+            const code = "go install github.com/AdityaNarayan29/masstDB@latest";
+            navigator.clipboard.writeText(code);
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        }
+    </script>
+</body>
+</html>
